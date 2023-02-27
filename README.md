@@ -7,5 +7,3 @@ The playlist mostly consists of my selection of good songs per album (or entire 
 99% of my music listening takes place on spotify, there are only a few songs I listen to on YouTube sometimes because they are either live or not on Spotify.
 
 Because the playlist mostly includes songs by Dire Straits, Red Hot Chili Peppers and Jimi Hendrix, I think Castles Made of Sand is a pretty typical song in the list, as it is originally played by Jimi Hendrix, but covered by the Peppers. It sounds a little like a Dire Straits song too, and the text is in a similar style to that of the Dire Straits. Some very atypical songs are mostly 'guilty' pleasures, like Blue Monday and Young Guns by Wham.
-
-
