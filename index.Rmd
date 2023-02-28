@@ -147,9 +147,7 @@ ggplot(audio_features_clustered, aes(x = danceability, y = energy, color = facto
 
 ```{r}
 # print the songs in each cluster
-audio_features_clustered %>% 
-  group_by(cluster) %>% 
-  summarise(songs = paste(name, collapse = ", "))
+
 ```
 
 ### Chromagram
