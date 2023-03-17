@@ -5,19 +5,49 @@ date: "22 February 2023"
 output:
   flexdashboard::flex_dashboard:
     storyboard: true
+    theme: yeti
+    self_contained: false
+    orientation: rows
 ---
+
+------------------------------------------------------------------------
 
 ```{r, setup}
 library(tidyverse)
 library(plotly)
 library(spotifyr)
 library(compmus)
+library(flexdashboard)
+library(kableExtra)
 ```
 
-### Welcome to my portfolio!
+# Welcome to my portfolio!
+
+For my corpus, i have chosen my own personal playlist: **Big Music Mountain**. It is basically a (\~600 song) playlist with the songs I like most across all genres. Basically every song I come across and really like is included in it. I chose this playlist as my corpus because it represents my own taste in music really well, and I hope to gain some insights into that by analyzing the Big Music Mountain.
+
+The playlist mostly consists of my selection of good songs per album (or entire albums if all songs are good), so inside these albums there will be similarities, but across the albums there will be some differences. However, parts of the playlist are pretty similar (a Dire Straits album vs a Doors album will have quite some similarities).
+
+Big Music Mountain mostly consists of:
+
+-   **(Alternative / Psychedelic) Rock** (Jimi Hendrix, Parquet Courts, Red Hot Chili Peppers, Tame Impala)
+
+-   **Indie** (Sticky Fingers, Mako Road, Dope Lemon, Jungle)
+
+-   **Reggae** (Bob Marley, Billie Boyo, Eek-A-Mouse)
+
+-   **Blues** (Dire Straits, The Doors, Tony Joe White)
+
+-   **Country** (America, Canned Heat)
+
+-   **Funk & R&B** (Curtis Mayfield, James Brown)
+
+-   **Latin & African** (Manu Chao, Amanaz, William Onyeabor)
+
+In this project I will review my own taste in music through the Spotify API and various other analysis tools, and hope to gain new insights into which types of music I like, and why I like them.
+
+The playlist can be explored on the bottom of this page!
 
 ```{r}
-
 Sys.setenv(SPOTIFY_CLIENT_ID = 'e0b7bfdbe23340798ed4a387e11d1c33')
 Sys.setenv(SPOTIFY_CLIENT_SECRET = '5aebd15afa39467fbf6e14ec48ce8fb7')
 
@@ -30,7 +60,228 @@ bigmusicmountain <-
   get_playlist_audio_features("", playlist_id) %>% 
   mutate(track.artists = map_chr(track.artists, \(x) x[1, "name"]))
 
-# plot the acousticness and energy of the songs in the playlist, with the color of the points representing the artist
+```
+
+------------------------------------------------------------------------
+
+```{=html}
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5WLcRUbX0ODQih9Fg2X5zG?utm_source=generator" width="100%" height=100%" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+```
+# Typical or Atypical? {.storyboard}
+
+### How do we find the most typical and atypical songs for the Big Music Mountain playlist?
+
+What are the most typical and atypical songs in the Big Music Mountain playlist?
+
+My guess would be, because a large portion of the playlist are songs by Dire Straits, Red Hot Chili Peppers and Jimi Hendrix, that Castles Made of Sand is a pretty typical song in the list, as it is originally played by Jimi Hendrix, but covered by the Peppers. It sounds a little like a Dire Straits song too, and the text is in a similar style to that of the Dire Straits. Some very atypical songs are mostly 'guilty' pleasures, like Blue Monday and Young Guns by Wham.
+
+However, this is all based on gut feeling, from which we can't really conclude facts. So how do we find typical and atypical songs in a playlist?
+
+[Spotify keeps track of numerous features for every song on their platform,](https://developer.spotify.com/documentation/web-api/reference/#/operations/get-audio-features) which allows us to analyze the songs in our playlists! These features are:
+
+-   **Acousticness**: A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic.
+
+-   **Danceability** describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.
+
+-   **Energy**: Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.
+
+-   **Instrumentalness**: Predicts whether a track contains no vocals. "Ooh" and "aah" sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly "vocal". The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.
+
+-   **Key**: The key the track is in. Integers map to pitches using standard Pitch Class notation. E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on. If no key was detected, the value is -1.
+
+-   **Liveness**: Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live.
+
+-   **Loudness**: The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typically range between -60 and 0 db.
+
+-   **Mode**: Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.
+
+-   **Speechiness**: Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks.
+
+-   **Tempo**: The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.
+
+-   **Valence**: A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry)
+
+The first step will be to calculate what the average (mean) and median values of the Spotify features are for the entire playlist. This gives a good first look at what an average song for the Big Music Mountain sounds like to Spotify, based on the 11 features listed above. These features will be used a lot in this entire project, so it is good to understand them well!
+
+The median and mean values of the features can be seen in the tables on the right hand side of this page.
+
+------------------------------------------------------------------------
+
+```{r}
+
+# calculating medians
+playlist_medians <- bigmusicmountain %>% 
+  summarise(across(c(danceability, energy, key, loudness, mode, speechiness, 
+                     acousticness, instrumentalness, liveness, valence, tempo), median))
+
+playlist_medians_table <- playlist_medians %>%
+  pivot_longer(everything(), names_to = "variable", values_to = "median") %>%
+  arrange(variable)
+
+# format median table
+kable(playlist_medians_table, 
+      col.names = c("Variable", "Median"), 
+      align = "c", 
+      caption = "Median Values for Music Attributes") %>% 
+  kable_styling(full_width = F)
+
+# calculating means
+playlist_means <- bigmusicmountain %>% 
+  summarise(across(c(danceability, energy, key, loudness, mode, speechiness, 
+                     acousticness, instrumentalness, liveness, valence, tempo), mean))
+
+playlist_means_table <- playlist_means %>%
+  pivot_longer(everything(), names_to = "variable", values_to = "mean") %>%
+  arrange(variable)
+
+# format mean table
+kable(playlist_means_table, 
+      col.names = c("Variable", "Mean"), 
+      align = "c", 
+      caption = "Mean Values for Music Attributes") %>% 
+  kable_styling(full_width = F)
+```
+
+### Violin plots
+
+```{r}
+# Reshape data to long format
+music_data <- bigmusicmountain %>%
+  pivot_longer(cols = c(danceability, energy, key, loudness, mode, speechiness, 
+                        acousticness, instrumentalness, liveness, valence, tempo),
+               names_to = "feature", 
+               values_to = "value")
+
+# Create violin plots for each feature
+plots <- lapply(unique(music_data$feature), function(feature) {
+  ggplot(data = music_data[music_data$feature == feature,], 
+         aes(x = feature, y = value, fill = "#49adca")) +
+    geom_violin(fill="#49adca") +
+    labs(title = feature) +
+    theme_minimal() +
+    theme(legend.position = "none")
+})
+
+# Combine plots using cowplot package
+library(cowplot)
+plot_grid(plotlist = plots, ncol = 4, align = "hv")
+```
+
+------------------------------------------------------------------------
+
+In order to visualize the distribution of features in the Big Music Mountain playlist, I have made a violin plot for each feature, in which the distribution of values can be seen. In a violin plot, the width of the body at a certain point is relative to how often that value is found in the data.
+
+Let's walk through a few of these plots to get a better idea of the distribution of feature values in the Big Music Mountain!
+
+-   **Danceability**, **valence**, **loudness** and **energy**: In each of these plots, we see that they are somewhat similar to each other, which is logical because these features are dependent on one another. We can see that overall, songs in the playlist are quite danceable, often positive, have high energy and are quite loud.
+
+-   **Acousticness**, **instrumentalness** and **speechiness**: In these plots we see a thin body at the top, and a broad body at the bottom, meaning that songs in the playlist aren't often acoustic, instrumental or 'speechy'. We can also see that these features are somewhat correlated to each other, which makes sense too, since acoustic songs are often instrumental too.
+
+-   **Key** & **Mode**: These plots don't really give us valuable information, only that mode is quite uniformly distributed between 0 and 1, with a slight tendency towards 1 (major). Key has a broad body in most places, except for key 3 (D# / Eb), which actually corresponds to the [least common key in music](https://www.jmlmusic.no/blog/most-popular-keys-in-songwriting), which interestingly also is D# / Eb.
+
+The next step in our process of finding the most (a)typical song in the Big Music Mountain playlist is to find out which song's features are the closest to the median values.
+
+### Which songs are the most typical and atypical for the Big Music Mountain playlist?
+
+To find which song is most typical for the Big Music Mountain, and therefore also for my taste in music, I have calculated the Euclidean distance from each song's features to the median value for that feature, and added these up. Then the smallest distance can be read off for the most typical song, and the highest distance for the most atypical song. I have made a top 3 for typical and atypical songs.
+
+I have chosen to only include the variables which range from 0-1, because a variable like tempo can range from (e.g.) 60 to 180, and therefore weigh in much stronger. I have tried scaling the variables that don't range from 0-1, but found that the results were less accurate to my actual music taste.
+
+Here is what I have found!
+
+**Most typical songs:**
+
+1.  In The Gallery - Dire Straits
+
+    ```{=html}
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5SXemxLERs0imkLpe4Aq8v?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    ```
+
+2.  Money For Nothing - Dire Straits
+
+    ```{=html}
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4bO6DljpuAeQh6HS20i0I5?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    ```
+
+3.  One of These Nights - Eagles
+
+    ```{=html}
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/608xszaAxVh4m7NcKJiAbF?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    ```
+
+**Most atypical songs:**
+
+1.  Private Investigations - Dire Straits
+
+    ```{=html}
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5KVak7r5YKcnkmARc0hy0Q?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    ```
+
+2.  Green Onions - Booker T. & The M.G.'s
+
+    ```{=html}
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4fQMGlCawbTkH9yPPZ49kP?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    ```
+
+3.  Brothers In Arms - Dire Straits
+
+    ```{=html}
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/60bF2b61f7Q5Bt82QCBwvc?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    ```
+
+```{r}
+
+# Calculate Euclidean distance for each song
+bigmusicmountain_dist <- bigmusicmountain %>% 
+  mutate(dist = sqrt((danceability - playlist_medians$danceability)^2 +
+                       (energy - playlist_medians$energy)^2 +
+                       (speechiness - playlist_medians$speechiness)^2 +
+                       (acousticness - playlist_medians$acousticness)^2 +
+                       (instrumentalness - playlist_medians$instrumentalness)^2 +
+                       (liveness - playlist_medians$liveness)^2 +
+                       (valence - playlist_medians$valence)^2))
+
+# Sort by distance and select first row (i.e., song with smallest distance)
+most_average_song <- bigmusicmountain_dist %>% 
+  arrange(dist) %>% 
+  slice(1:3)
+
+
+
+least_average_song <- bigmusicmountain_dist %>% 
+  arrange(-dist) %>% 
+  slice(1:3)
+
+
+
+
+```
+
+### plots
+
+```{r}
+typical_songs <- bigmusicmountain_dist %>% 
+  arrange(dist) %>% 
+  head(3)
+
+atypical_songs <- bigmusicmountain_dist %>% 
+  arrange(desc(dist)) %>% 
+  head(3)
+
+typical_songs_plot <- ggplot(typical_songs, aes(x = reorder(track.name, -dist), y = dist)) +
+  geom_col(fill = "steelblue") +
+  labs(title = "Most Typical Songs",
+       x = "Track Name",
+       y = "Distance to Playlist Median") +
+  coord_flip()
+
+typical_songs_plot
+```
+
+### Acousticness v.s. Energy
+
+```{r}
+# plot the acousticness and energy of the songs in the playlist
 a <- ggplot(bigmusicmountain, aes(x = acousticness, y = energy, size=instrumentalness, color=valence, text = track.name)) +
   geom_point(alpha = 0.8) +
   geom_smooth() +
@@ -44,63 +295,6 @@ ggplotly(a)
 ------------------------------------------------------------------------
 
 this is a description
-
-### This is the second tab
-
-```{r}
-
-# calculating medians
-playlist_medians <- bigmusicmountain %>% 
-  summarise(across(c(danceability, energy, key, loudness, mode, speechiness, 
-                     acousticness, instrumentalness, liveness, valence, tempo), median))
-
-playlist_medians_table <- playlist_medians %>%
-  pivot_longer(everything(), names_to = "variable", values_to = "median")
-playlist_medians_table
-
-# calculating means
-playlist_means <- bigmusicmountain %>% 
-  summarise(across(c(danceability, energy, key, loudness, mode, speechiness, 
-                     acousticness, instrumentalness, liveness, valence, tempo), mean))
-
-playlist_means_table <- playlist_means %>%
-  pivot_longer(everything(), names_to = "variable", values_to = "mean")
-playlist_means_table
-
-```
-
-### New tab
-
-```{r}
-
-# Calculate Euclidean distance for each song
-bigmusicmountain_dist <- bigmusicmountain %>% 
-  mutate(dist = sqrt((danceability - playlist_medians$danceability)^2 +
-                       (energy - playlist_medians$energy)^2 +
-                       (key - playlist_medians$key)^2 +
-                       (loudness - playlist_medians$loudness)^2 +
-                       (mode - playlist_medians$mode)^2 +
-                       (speechiness - playlist_medians$speechiness)^2 +
-                       (acousticness - playlist_medians$acousticness)^2 +
-                       (instrumentalness - playlist_medians$instrumentalness)^2 +
-                       (liveness - playlist_medians$liveness)^2 +
-                       (valence - playlist_medians$valence)^2 +
-                       (tempo - playlist_medians$tempo)^2))
-
-# Sort by distance and select first row (i.e., song with smallest distance)
-most_average_song <- bigmusicmountain_dist %>% 
-  arrange(dist) %>% 
-  slice(1)
-
-most_average_song
-
-least_average_song <- bigmusicmountain_dist %>% 
-  arrange(-dist) %>% 
-  slice(1)
-least_average_song
-
-
-```
 
 ### Violin
 
@@ -399,74 +593,6 @@ This is a chordogram of Out of Time Man, by Manu Negra
 ------------------------------------------------------------------------
 
 ### Old Playlist v.s. New Playlist
-
-```{r}
-
-surf <-
-  get_playlist_audio_features(
-    "surf",
-    "4h0KB1rnFndnY0rCX289SV?si=6191397bef7e42ef"
-  ) |>
-  add_audio_analysis()
-bigmusicmountain <-
-  get_playlist_audio_features(
-    "bigmusicmountain",
-    playlist_id
-  ) |>
-  add_audio_analysis()
-playlists <-
-  surf |>
-  mutate(playlist = "surf") |>
-  bind_rows(bigmusicmountain |> mutate(playlist = "bigmusicmountain"))
-
-playlists |>
-  mutate(
-    sections =
-      map(
-        sections,                                    # sections or segments
-        summarise_at,
-        vars(tempo, loudness, duration),             # features of interest
-        list(section_mean = mean, section_sd = sd)   # aggregation functions
-      )
-  ) |>
-  unnest(sections) |>
-  ggplot(
-    aes(
-      x = tempo,
-      y = tempo_section_sd,
-      colour = playlist,
-      alpha = loudness
-    )
-  ) +
-  geom_point(aes(size = duration / 60)) +
-  geom_rug() +
-  theme_minimal() +
-  ylim(0, 5) +
-  labs(
-    x = "Mean Tempo (bpm)",
-    y = "SD Tempo",
-    colour = "Playlist",
-    size = "Duration (min)",
-    alpha = "Volume (dBFS)"
-  )
-
-playlists |>
-  mutate(
-    timbre =
-      map(
-        segments,
-        compmus_summarise,
-        timbre,
-        method = "mean"
-      )
-  ) |>
-  select(playlist, timbre) |>
-  compmus_gather_timbre() |>
-  ggplot(aes(x = basis, y = value, fill = playlist)) +
-  geom_violin() +
-  scale_fill_viridis_d() +
-  labs(x = "Spotify Timbre Coefficients", y = "", fill = "playlist")
-```
 
 ------------------------------------------------------------------------
 
