@@ -343,8 +343,8 @@ ggplotly(p)
 ### kmeans clusters
 
 ```{r}
-# print the songs in each cluster
-
+least_danceable_song <- bigmusicmountain[which.min(bigmusicmountain$danceability), ]
+least_danceable_song$track.name
 ```
 
 ### Chromagram
@@ -591,6 +591,37 @@ outoftime |>
 This is a chordogram of Out of Time Man, by Manu Negra
 
 ------------------------------------------------------------------------
+
+```{r}
+top_3_danceable_songs <- bigmusicmountain %>% 
+  top_n(-3, wt = danceability)
+
+
+```
+
+### Tempogram
+
+```{r}
+masterofmycraft <- get_tidy_audio_analysis("5roGmmhLjfb2WqukL1u0TV?si=98f3e900a0da4cd3")
+
+masterofmycraft |>
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
+themessage <- 
+```
+
+An idea that came to me was if I could see which song is the least danceable v.s. the song that is most danceable, and make two tempograms out of them. Because beat/tempo consistency is a part of the danceability feature, I would expect the most danceable song to have a high beat consistency, whereas the least danceable song is expected to have a lot of tempo variation.\
+\
+Let's look at the two songs!
+
+-   **Least danceable song:** Master Of My Craft - Parquet Courts
+
+-   **Most danceable song:**
 
 ### Old Playlist v.s. New Playlist
 
