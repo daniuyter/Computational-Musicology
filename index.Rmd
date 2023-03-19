@@ -596,15 +596,16 @@ This is a chordogram of Out of Time Man, by Manu Negra
 top_3_danceable_songs <- bigmusicmountain %>% 
   top_n(-3, wt = danceability)
 
-
+top_3_danceable_songs <- bigmusicmountain %>% 
+  top_n(3, wt = danceability)
 ```
 
 ### Tempogram
 
 ```{r}
-masterofmycraft <- get_tidy_audio_analysis("5roGmmhLjfb2WqukL1u0TV?si=98f3e900a0da4cd3")
+voodoochild <- get_tidy_audio_analysis("2AxCeJ6PSsBYiTckM0HLY7?si=79ee7af886dd419d")
 
-masterofmycraft |>
+voodoochild |>
   tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
   ggplot(aes(x = time, y = bpm, fill = power)) +
   geom_raster() +
@@ -612,16 +613,26 @@ masterofmycraft |>
   labs(x = "Time (s)", y = "Tempo (BPM)") +
   theme_classic()
 
-themessage <- 
+themessage <- get_tidy_audio_analysis("5isA9icHWl2651hvfr1EOV?si=61dfe254355b4156")
+themessage |>
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+
 ```
 
-An idea that came to me was if I could see which song is the least danceable v.s. the song that is most danceable, and make two tempograms out of them. Because beat/tempo consistency is a part of the danceability feature, I would expect the most danceable song to have a high beat consistency, whereas the least danceable song is expected to have a lot of tempo variation.\
+An idea that came to me was if I could see which song is the least danceable v.s. the song that is most danceable, and make two tempograms out of them. Because beat/tempo consistency is a part of the danceability feature, I would expect the most danceable song to have a high beat consistency, whereas the least danceable song is expected to have a lot of tempo variation.
+
+I have chosen to take the top 3 most and least danceable songs and to take the most interesting one out of each one.\
 \
 Let's look at the two songs!
 
--   **Least danceable song:** Master Of My Craft - Parquet Courts
+-   **Least danceable song:** Voodoo Child (Slight Return) - Jimi Hendrix
 
--   **Most danceable song:**
+-   **Most danceable song:** The Message - Grandmaster Flash & The Furious Five
 
 ### Old Playlist v.s. New Playlist
 
