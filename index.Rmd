@@ -6,6 +6,10 @@ output:
   flexdashboard::flex_dashboard:
     storyboard: true
     theme: yeti
+    params:
+      theme: yeti
+      base_font:
+        google: Raleway
     self_contained: false
     orientation: rows
 ---
@@ -19,6 +23,8 @@ library(spotifyr)
 library(compmus)
 library(flexdashboard)
 library(kableExtra)
+library(fmsb)
+
 ```
 
 # Welcome to my portfolio!
@@ -144,7 +150,7 @@ kable(playlist_means_table,
 
 ### Violin plots
 
-```{r}
+```{r plot, out.width = '80%', out.height = 'auto'}
 # Reshape data to long format
 music_data <- bigmusicmountain %>%
   pivot_longer(cols = c(danceability, energy, key, loudness, mode, speechiness, 
@@ -242,13 +248,13 @@ bigmusicmountain_dist <- bigmusicmountain %>%
                        (valence - playlist_medians$valence)^2))
 
 # Sort by distance and select first row (i.e., song with smallest distance)
-most_average_song <- bigmusicmountain_dist %>% 
+most_average_songs <- bigmusicmountain_dist %>% 
   arrange(dist) %>% 
   slice(1:3)
 
 
 
-least_average_song <- bigmusicmountain_dist %>% 
+least_average_songs <- bigmusicmountain_dist %>% 
   arrange(-dist) %>% 
   slice(1:3)
 
@@ -257,57 +263,196 @@ least_average_song <- bigmusicmountain_dist %>%
 
 ```
 
-### plots
+### Analysis (a)typical songs
 
 ```{r}
-typical_songs <- bigmusicmountain_dist %>% 
-  arrange(dist) %>% 
-  head(3)
+privateinvest <- get_track_audio_features("5KVak7r5YKcnkmARc0hy0Q")
+brothersinarms <- get_track_audio_features("60bF2b61f7Q5Bt82QCBwvc")
+greenonions <- get_track_audio_features("4fQMGlCawbTkH9yPPZ49kP")
 
-atypical_songs <- bigmusicmountain_dist %>% 
-  arrange(desc(dist)) %>% 
-  head(3)
+inthegallery <- get_track_audio_features("5SXemxLERs0imkLpe4Aq8v")
+moneyfornothing <- get_track_audio_features("4bO6DljpuAeQh6HS20i0I5")
+oneofthesenights <- get_track_audio_features("608xszaAxVh4m7NcKJiAbF")
 
-typical_songs_plot <- ggplot(typical_songs, aes(x = reorder(track.name, -dist), y = dist)) +
-  geom_col(fill = "steelblue") +
-  labs(title = "Most Typical Songs",
-       x = "Track Name",
-       y = "Distance to Playlist Median") +
-  coord_flip()
 
-typical_songs_plot
-```
+# Reshape data to long format
+music_data1 <- bigmusicmountain %>%
+  pivot_longer(cols = c(danceability, energy, speechiness, 
+                        acousticness, instrumentalness, liveness, valence),
+               names_to = "feature", 
+               values_to = "value")
 
-### Acousticness v.s. Energy
+# filter data to only include relevant audio features and songs
+most_least_data <- music_data1 %>%
+  filter(track.id %in% c(most_average_songs$track.id, least_average_songs$track.id))
 
-```{r}
-# plot the acousticness and energy of the songs in the playlist
-a <- ggplot(bigmusicmountain, aes(x = acousticness, y = energy, size=instrumentalness, color=valence, text = track.name)) +
-  geom_point(alpha = 0.8) +
-  geom_smooth() +
-  scale_x_sqrt() +
-  labs(title = "Acousticness and Energy of Songs in the Big Music Mountain Playlist",
-       x = "Acousticness",
-       y = "Energy")
+
+
+# create a new data frame with the median values for each audio feature
+median_data <- playlist_medians_table %>%
+  filter(variable %in% c("danceability", "instrumentalness", "valence", "energy", "speechiness", "acousticness", "liveness")) %>%
+  rename(feature = variable, value = median)
+
+
+
+# plot the data with the median values added
+a <- ggplot(most_least_data, aes(x = feature, y = value, color = track.name)) +
+  geom_point(size = 3) +
+  geom_point(data = median_data, aes(x = feature, y = value), color = "black", size = 3, shape = 21, fill = "white") +
+  scale_color_discrete(name = "Song") +
+  labs(x = "", y = "Value", title = "Audio Features for Most and Least Average Songs") +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
 ggplotly(a)
 ```
 
 ------------------------------------------------------------------------
 
-this is a description
+Let's have a closer look at the most typical and atypical songs in the playlist. As we can see, actually most of the songs in both the typical and atypical songs are from Dire Straits, which is interesting because it shows they have a wide variety of songs in very different styles. The atypical songs **Private Investigations** and **Brothers In Arms** are probably atypical because they are both very long, slow, mostly instrumental songs.
 
-### Violin
+In this plot, we see the values of each audio feature (the ones that range from 0-1 to keep the scales from getting out of hand) for the top 3 typical songs for the Big Music Mountain, and the top 3 atypical songs. The (black-surrounded) white dots represent the median values for each feature.
+
+\
+Firstly, for the typical songs **In The Gallery, One Of These Nights** and **Money For Nothing** we can see that the audio features are quite average, around the median values for the features, whereas the atypical songs **Brothers In Arms, Private Investigations** and **Green Onions** have a much greater distance to the median. If we take valence as an example, we see that Brothers In Arms and Private Investigations fall in the same category of low valence songs, whereas Green Onions is an outlier in the sense that it's valence is extremely high.
+
+An interesting thing to point out is that Brothers In Arms is actually my favorite song of all time (Private Investigations is also up there), while it shows up as one of the most atypical songs in my playlist, so the most typical song in your playlist doesn't have to be your favorite song (the contrary in my case!).
+
+------------------------------------------------------------------------
+
+# Chromagrams {.storyboard data-navmenu="-ograms"}
+
+### Private Investigations - Dire Straits
 
 ```{r}
+#wood <-
+#  get_tidy_audio_analysis("5KVak7r5YKcnkmARc0hy0Q?si=f1a0307cd2cf4b49") |>
+#  select(segments) |>
+#  unnest(segments) |>
+#  select(start, duration, pitches)
 
-# violin plot with valence
-bigmusicmountain |>
-  ggplot(aes(x = playlist_name, y=valence))+
-    geom_violin()
+#wood |>
+#  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+#  compmus_gather_chroma() |> 
+#  ggplot(
+#    aes(
+#      x = start + duration / 2,
+#      width = duration,
+#      y = pitch_class,
+#      fill = value
+#    )
+#  ) +
+#  geom_tile() +
+#  geom_vline(xintercept = c(51, 229), color = "red") +
+#  geom_vline(xintercept = c(324, 345), color = "red") +
+#  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+#  theme_minimal() +
+#  scale_fill_viridis_c()
 
 ```
 
-### Test new idea
+```{=html}
+<center><img src="images/privateinvest_chromagram.png" alt="Private Investigations chromagram" style="width: 80%; height: 100%"></center>
+```
+```{=html}
+<center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5KVak7r5YKcnkmARc0hy0Q?utm_source=generator" width="50%" height="200" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
+```
+
+------------------------------------------------------------------------
+
+A chromagram provides a way to visualize the presence of different musical notes in an audio signal, in which the magnitude of the presence of each note is indicated with yellower shades. It basically shows you which notes are present in each part of a song, in which these parts can be split up in different segments, sections or bars.
+
+The chromagram pictured here is that of Private Investigations by Dire Straits which, as we saw from my previous analysis, was one of the most atypical songs in my playlist and therefore an interesting outlier to analyse. Before we dive into the chromagram, I will provide a little background on the song itself.
+
+Private Investigations is a rock song, released by (one of my favorite bands) Dire Straits in 1982, from the album Love Over Gold. It is a long song (6:45), in which the beginning is very quiet and soft, after which it slowly gets more intense as more instruments are added, such as (bass) guitar, drums, piano and synthesizers.
+
+Let's look at the chromagram now! I have marked several sections in the chromagram that are interesting to look at more closely.
+
+-   **Section 1** (0:00-0:51): This is the introduction of the song. It is a gentle piano part with a dark synthesizer sound playing a single note in the background. We can see from the chromagram that this note is E. The sporadic piano notes can be seen as greenish shades in the plot.
+
+-   **Section 2** (0:51-3:49): This is the middle part of the song, in which more instruments slowly start playing, and vocals come in. It starts with an acoustic guitar playing the song's theme once and then more instruments start following this theme. We can see that a theme is repeated several times from the chromagram; especially B, A, G, D and C# are played alternatingly during this part, which are notes from the B minor scale, coinciding with the key of the song.
+
+-   **Section 3** (3:49-5:24): After the middle part, the instrumental theme ends with a loud bass E note, repeating slowly throughout the section as more instruments play sporadic themes. This section looks really similar to the first section, except that it has more small different notes, which are the acoustic and electric guitar, along with some other instruments.
+
+-   **Section 4** (5:24-5:45): This section is a little special, because the chromagram doesn't really tell us which notes are present, it looks like all of them are somewhat present, but with low magnitudes. This is because this part is actually quiet, with only a few percussion instruments playing very softly. Percussion instruments usually play a sound that includes a lot of frequencies, so they tend to show up across all notes in a chromagram.
+
+-   **Section 5** (5:45-6:45): This is the outro, which once again is very similar to the introduction and third part. The same instruments are playing, and the song slowly fades to an end over a low E bass note.
+
+### Castles Made Of Sand - Jimi Hendrix / Red Hot Chili Peppers
+
+```{=html}
+<center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/3pqFE3RGj0ZVc4llJz5Nmr?utm_source=generator" width="80%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
+```
+.
+
+.
+
+.
+
+```{=html}
+<center><img src="images/castleschromagram.png" alt="Castles Made Of Sand chromagrams" style="width: 90%; height: 80%"></center>
+```
+
+------------------------------------------------------------------------
+
+Another interesting song in my corpus is Castles Made Of Sand, because this is the only song that occurs twice in the Big Music Mountain. The original version is by Jimi Hendrix, recorded in 1967, and the Red Hot Chili Peppers covered it as a bonus track in their album Blood Sugar Sex Magik in 1991. The Chili Peppers album actually has another Jimi Hendrix cover; Little Miss Lover. The guitarist of the Red Hot Chili Peppers, [John Frusciante, is greatly influenced by Jimi Hendrix](https://faroutmagazine.co.uk/john-frusciante-explains-why-jimi-hendrix-is-the-greatest-guitarist-of-all-time/) (calling him the greatest guitar player of all time), which is recognizable if you listen to both of their songs. They have very similar styles of guitar playing.
+
+I have made a chromagram of both songs to analyse what similarities and differences they have.
+
+In the Red Hot Chili Peppers cover version, the song is slowed down a bit in respect to Jimi's version, which we can see by the chromagram being a bit longer. There is one point in the song though (marked with the red bars) where the Chili Peppers speed up a lot for around 20 seconds, which is visible in the chromagram by the shorter intervals of the yellow bars.
+
+The second thing that appeared to me was that it isn't entirely clear which key the Jimi Hendrix version is in. It looks like either G or F#, whereas the Chili Peppers version is clearly in F#. Jimi Hendrix famously tuned his guitar a half step down, so instead of the standard tuning E A D G B E, he often used Eb Ab Db Gb Bb Eb. I know from the guitar chords that the song is in F#, so I assume the recording quality of Jimi's version is a little lower, resulting in less clearly emphasised notes. The Red Hot Chili peppers version has a 20+ year advantage on production technology, so sounds more compressed and clear.
+
+The same chord progression can be seen in both songs, with a strong emphasis on the notes F#, G#, E, Eb and C#.
+
+Whereas in Jimi's version, the ending doesn't have emphasis on specific notes, we see in the Peppers' version that the chromagram very clearly displays the key Gb, along with some C#. They actually play the same outro, but Jimi's version has more feedback, which probably caused it to smear out the frequencies across all notes.
+
+# Cepstogram {data-navmenu="-ograms"}
+
+```{=html}
+<center><img src="images/cepstogram.png" alt="Cepstogram Pompette" style="width: 80%; height: 100%"></center>
+```
+.
+
+.
+
+```{=html}
+<center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/0eOBMq9SIuDtkvKLA873pu?utm_source=generator" width="50%" height="200" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
+```
+
+------------------------------------------------------------------------
+
+A cepstrogram is a different kind of audio-analysis visualisation, in which timbre features are plotted over time. These features aren't really well known, but we know that the c01 coefficient corresponds to loudness, c02 to bright tones, c03 to mid range tones. After this the coefficients get a little hard to put into words. In this case I have chosen to split the time steps up in sections.
+
+In this plot we see the cepstogram of Pompette, by Dutch band Jungle By Night. It is an instrumental song with a lot of different instruments. We see that a lot of the timbre coefficients are present in this song, which is most likely due to the large amount of instruments with different timbre, all producing very different sounds.
+
+There is one very interesting part of the cepstogram, from around 220-250 seconds, in which we see most the most present timbre coefficient jump from c01 to c02. c01 corresponds with loudness and in this part there is a somewhat quiet percussion solo, explaining why the c01 coefficient is less present here. The c02 coefficient corresponding to bright tones is clear here, as the percussion instrument plays a high tone.
+
+The outro of the song is a synthesizer playing a scale repeatedly, which also causes the timbre coefficients to switch up a bit.
+
+# Acousticness vs. Energy {.storyboard data-navmenu="Extra Visualisations"}
+
+```{r}
+
+# plot the acousticness and energy of the songs in the playlist
+g = ggplot(bigmusicmountain, aes(x = acousticness, y = energy, color=valence, size=instrumentalness)) +
+  geom_point(alpha = 0.8) +
+  geom_smooth(method = "loess") +
+  scale_x_sqrt() +
+  labs(title = "Acousticness and Energy of Songs in the Big Music Mountain Playlist",
+       x = "Acousticness",
+       y = "Energy")
+ggplotly(g)
+
+```
+
+------------------------------------------------------------------------
+
+In this plot we see the energy plotted against the logarithm of the acousticness for songs in the Big Music Mountain. The dots all represent songs, with the size of the dots representing instrumentalness and the color valence. I also plotted a smoothed curve across the data, in which a clear relationship can be seen across the accousticness / energy data, that when a song gets more acoustic, the energy tends to get lower. I think this relationship is quite logical, as acoustic songs are often slower and less noisy.
+
+The second relationship that can be seen in the plot, is that the lower the dots get, the darker they tend to be. This means that the lower the songs are in energy, the lower the valence tends to be. This means that low energy songs are often more negative/sadder.
+
+### K-Means clustering
 
 ```{r}
 
@@ -320,150 +465,215 @@ audio_features_scaled <- scale(audio_features_cols)
 
 # Perform clustering with k=5 using k-means algorithm
 set.seed(123)
-k <- 5
+k <- 3
 km <- kmeans(audio_features_scaled, centers = k)
 
 # Add cluster labels to the audio features data
 audio_features_clustered <- bigmusicmountain %>%
   mutate(cluster = km$cluster)
 
-# Print the number of songs in each cluster
-table(audio_features_clustered$cluster)
-
 # Create a scatterplot of the clustered data
-p <- ggplot(audio_features_clustered, aes(x = danceability, y = energy, color = factor(cluster), text = str_c(track.artists))) +
+p <- ggplot(audio_features_clustered, aes(x = danceability, y = energy, color = factor(cluster), text = str_c(track.name))) +
   geom_point(alpha = 0.7) +
   xlab("Danceability") +
   ylab("Energy") +
   ggtitle("Audio Feature Clustering") +
-  theme_bw()
+  theme_bw() +
+  stat_ellipse(type = "norm", level = 0.95, aes(group = factor(cluster)), linetype = "dashed") +
+  guides(color = guide_legend(title = "Cluster"))
+
 ggplotly(p)
 ```
 
-### kmeans clusters
+------------------------------------------------------------------------
+
+In this plot we see a k-means clustering algorithm that has been applied to the Big Music Mountain playlists.
+
+Firstly the audio features have been normalised (scaled from 0-1), in order to make the results more accurate. I have chosen k=3 clusters, because this gave me the most clear results; higher values for k resulted in unclear clusters, and lower values will underfit. Then I plotted the results, with danceability on the x-axis, and energy on the y-axis to visualise the clusters.
+
+We can see that the k-means algorithm has divided the playlist in 3 clear groups:
+
+-   **Cluster 1** (red): These are high energy / low danceability songs. Songs in this cluster include a lot of Red Hot Chili Peppers and Jimi Hendrix songs, as well as some Tame Impala and Steely Dan; artists who are known for producing high energy songs. These are often songs that are loud and fast, but not really danceable. Cluster 1 almost exclusively consists of rock songs.
+-   **Cluster 2** (green): These are the low-middle energy / average danceable songs. This cluster includes songs like Landslide by Fleetwood Mac and several low-tempo Dire Straits and The Doors songs. Cluster 2 consists mosty of soft rock and reggae songs, with the occasional pop song.
+-   **Cluster 3** (blue): This final cluster consists of middle-high energy / high danceability songs. Examples of songs in this cluster are some Doe Maar, Tom Misch and James Brown songs. Cluster 3 consists of upbeat reggae songs, along with some catchy (danceable) electronic/pop songs.
+
+It is very interesting to see that the k-means algorithm has correctly distinguished several genres: Rock (cluster 1), Soft Rock / Reggae (cluster 2) and upbeat Reggae / Pop (cluster 3).
+
+The identified clusters coincide with my taste in music a lot in a certain way. I enjoy listening to songs in the same cluster at different times. So where one day I might be in the mood for a lot of Chili Peppers / Jimi Hendrix songs from cluster 1, another day I might be looking for more down-tempo, slower rock or reggae songs like Under The Bridge (Red Hot Chili Peppers) and Love Street (The Doors) all from cluster 2.
 
 ```{r}
-least_danceable_song <- bigmusicmountain[which.min(bigmusicmountain$danceability), ]
-least_danceable_song$track.name
+#for(i in 1:k) {
+#  cat("Cluster", i, "songs:\n")
+#  songs <- audio_features_clustered %>%
+#    filter(cluster == i) %>%
+#    select(track.name, track.artists)
+#  print(songs)
+#  cat("\n")
+#}
+# Group the data by cluster
+# clustered_songs <- audio_features_clustered %>%
+#  group_by(cluster) %>%
+#  summarize(songs = paste(track.name, collapse = ", "))
+
+## View the songs in each cluster
+#print(clustered_songs)
 ```
 
 ### Chromagram
 
 ```{r}
-castlesjimi <- get_tidy_audio_analysis("3qebSLgUwaEqbwCM5sj5Kh") %>%
-  select(segments) %>%
-  unnest(segments) %>%
+wood <-
+  get_tidy_audio_analysis("5KVak7r5YKcnkmARc0hy0Q?si=f1a0307cd2cf4b49") |>
+  select(segments) |>
+  unnest(segments) |>
   select(start, duration, pitches)
 
-castlesrhcp <- get_tidy_audio_analysis("7mUNyl16vX2OrKqMAuZJF9") %>%
-  select(segments) %>%
-  unnest(segments) %>%
-  select(start, duration, pitches)
-
-castles <- bind_rows(
-  castlesjimi %>% mutate(song = "Jimi Hendrix"),
-  castlesrhcp %>% mutate(song = "Red Hot Chili Peppers")
-)
-
-castles %>%
-  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
-  compmus_gather_chroma() %>%
-  ggplot(aes(
-    x = start + duration / 2,
-    width = duration * 2,
-    y = pitch_class,
-    fill = value
-  )) +
+wood |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
   geom_tile() +
-  labs(x = "Time (s)", y = NULL, fill = "Magnitude", title = "Castles Made of Sand") +
+  geom_vline(xintercept = c(51, 229), color = "red") +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
   theme_minimal() +
-  scale_fill_viridis_c() +
-  facet_grid(rows = vars(song))
+  scale_fill_viridis_c()
+
+
+#castlesrhcp <- get_tidy_audio_analysis("7mUNyl16vX2OrKqMAuZJF9") %>%
+#  select(segments) %>%
+ # unnest(segments) %>%
+  #select(start, duration, pitches)
+
+#castles <- bind_rows(
+ # castlesjimi %>% mutate(song = "Jimi Hendrix"),
+  #castlesrhcp %>% mutate(song = "Red Hot Chili Peppers")
+#)
+
+#castles %>%
+#  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
+#  compmus_gather_chroma() %>%
+#  ggplot(aes(
+#    x = start + duration / 2,
+#    width = duration * 2,
+#    y = pitch_class,
+#    fill = value
+#  )) +
+#  geom_tile() +
+#  labs(x = "Time (s)", y = NULL, fill = "Magnitude", title = "Castles Made of Sand") +
+#  theme_minimal() +
+#  scale_fill_viridis_c() +
+#  facet_grid(rows = vars(song))
 ```
 
 ### Dynamic time warping
 
 ```{r}
-compmus_long_distance(
-  castlesjimi |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
-  castlesrhcp |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
-  feature = pitches,
-  method = "euclidean"
-) |>
-  ggplot(
-    aes(
-      x = xstart + xduration / 2,
-      width = xduration,
-      y = ystart + yduration / 2,
-      height = yduration,
-      fill = d
-    )
-  ) +
-  geom_tile() +
-  coord_equal() +
-  labs(x = "Jimi Hendrix", y = "Red Hot Chili Peppers") +
-  theme_minimal() +
-  scale_fill_viridis_c(guide = NULL)
+#compmus_long_distance(
+#  castlesjimi |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
+#  castlesrhcp |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
+#  feature = pitches,
+#  method = "euclidean"
+#) |>
+#  ggplot(
+#    aes(
+#      x = xstart + xduration / 2,
+#      width = xduration,
+#      y = ystart + yduration / 2,
+#      height = yduration,
+#      fill = d
+#    )
+#  ) +
+#  geom_tile() +
+#  coord_equal() +
+#  labs(x = "Jimi Hendrix", y = "Red Hot Chili Peppers") +
+#  theme_minimal() +
+#  scale_fill_viridis_c(guide = NULL)
 ```
 
 ### Cepstogram
 
 ```{r}
- dernkala <-
-  get_tidy_audio_analysis("6S1TC3ESLe7PbrztzsQmw4?si=bdddedf19a534d4c") |> # Change URI.
-  compmus_align(bars, segments) |>                     # Change `bars`
-  select(bars) |>                                      #   in all three
-  unnest(bars) |>                                      #   of these lines.
-  mutate(
-    pitches =
-      map(segments,
-        compmus_summarise, pitches,
-        method = "rms", norm = "euclidean"              # Change summary & norm.
-      )
-  ) |>
-  mutate(
-    timbre =
-      map(segments,
-        compmus_summarise, timbre,
-        method = "rms", norm = "euclidean"              # Change summary & norm.
-      )
-  )
- 
- dernkala |>
-  compmus_gather_timbre() |>
-  ggplot(
-    aes(
-      x = start + duration / 2,
-      width = duration,
-      y = basis,
-      fill = value
-    )
-  ) +
-  geom_tile() +
-  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
-  scale_fill_viridis_c() +                              
-  theme_classic()
+#  dernkala <-
+#   get_tidy_audio_analysis("0eOBMq9SIuDtkvKLA873pu") |> # Change URI.
+#   compmus_align(sections, segments) |>                     # Change `bars`
+#   select(sections) |>                                      #   in all three
+#   unnest(sections) |>                                      #   of these lines.
+#   mutate(
+#     pitches =
+#       map(segments,
+#         compmus_summarise, pitches,
+#         method = "rms", norm = "euclidean"              # Change summary & norm.
+#       )
+#   ) |>
+#   mutate(
+#     timbre =
+#       map(segments,
+#         compmus_summarise, timbre,
+#         method = "rms", norm = "euclidean"              # Change summary & norm.
+#       )
+#   )
+#  
+#  dernkala |>
+#   compmus_gather_timbre() |>
+#   ggplot(
+#     aes(
+#       x = start + duration / 2,
+#       width = duration,
+#       y = basis,
+#       fill = value
+#     )
+#   ) +
+#   geom_tile() +
+#   geom_vline(xintercept = c(221, 252), color = "red") +
+#   
+#   labs(x = "Time (s)", y = NULL, title="Cepstogram of Pompette - Jungle By Night", fill = "Magnitude") +
+#   scale_fill_viridis_c() +                              
+#   theme_classic()
 ```
+
+```{=html}
+<center><img src="images/cepstogram.png" alt="Cepstogram Pompette" style="width: 80%; height: 100%"></center>
+```
+```{=html}
+<center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/0eOBMq9SIuDtkvKLA873pu?utm_source=generator" width="50%" height="200" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
+```
+
+------------------------------------------------------------------------
+
+A cepstrogram is a different kind of audio-analysis visualisation, in which timbre features are plotted over time. These features aren't really well known, but we know that the c01 coefficient corresponds to loudness, c02 to bright tones, c03 to mid range tones. After this the coefficients get a little hard to put into words. In this case I have chosen to split the time steps up in sections.
+
+In this plot we see the cepstogram of Pompette, by Dutch band Jungle By Night. It is an instrumental song with a lot of different instruments. We see that a lot of the timbre coefficients are present in this song, which is most likely due to the large amount of instruments with different timbre, all producing very different sounds.
+
+There is one very interesting part of the cepstogram, from around 220-250 seconds, in which we see most the most present timbre coefficient jump from c01 to c02. c01 corresponds with loudness and in this part there is a somewhat quiet percussion solo, explaining why the c01 coefficient is less present here. The c02 coefficient corresponding to bright tones is clear here, as the percussion instrument plays a high tone.
+
+The outro of the song is a synthesizer playing a scale repeatedly, which also causes the timbre coefficients to switch up a bit.
 
 ### Self similarity matrix
 
 ```{r}
-dernkala |>
-  compmus_self_similarity(timbre, "cosine") |> 
-  ggplot(
-    aes(
-      x = xstart + xduration / 2,
-      width = xduration,
-      y = ystart + yduration / 2,
-      height = yduration,
-      fill = d
-    )
-  ) +
-  geom_tile() +
-  coord_fixed() +
-  scale_fill_viridis_c(guide = "none") +
-  theme_classic() +
-  labs(x = "", y = "")
+# dernkala |>
+#   compmus_self_similarity(timbre, "cosine") |> 
+#   ggplot(
+#     aes(
+#       x = xstart + xduration / 2,
+#       width = xduration,
+#       y = ystart + yduration / 2,
+#       height = yduration,
+#       fill = d
+#     )
+#   ) +
+#   geom_tile() +
+#   coord_fixed() +
+#   scale_fill_viridis_c(guide = "none") +
+#   theme_classic() +
+#   labs(x = "", y = "")
 
 ```
 
@@ -593,46 +803,50 @@ This is a chordogram of Out of Time Man, by Manu Negra
 ------------------------------------------------------------------------
 
 ```{r}
-top_3_danceable_songs <- bigmusicmountain %>% 
+last_3_danceable_songs <- bigmusicmountain %>% 
   top_n(-3, wt = danceability)
 
 top_3_danceable_songs <- bigmusicmountain %>% 
   top_n(3, wt = danceability)
 ```
 
-### Tempogram
+### Tempograms of the most and least danceable songs in the Big Music Mountain
 
-```{r}
-voodoochild <- get_tidy_audio_analysis("2AxCeJ6PSsBYiTckM0HLY7?si=79ee7af886dd419d")
-
-voodoochild |>
-  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
-  ggplot(aes(x = time, y = bpm, fill = power)) +
-  geom_raster() +
-  scale_fill_viridis_c(guide = "none") +
-  labs(x = "Time (s)", y = "Tempo (BPM)") +
-  theme_classic()
-
-themessage <- get_tidy_audio_analysis("5isA9icHWl2651hvfr1EOV?si=61dfe254355b4156")
-themessage |>
-  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
-  ggplot(aes(x = time, y = bpm, fill = power)) +
-  geom_raster() +
-  scale_fill_viridis_c(guide = "none") +
-  labs(x = "Time (s)", y = "Tempo (BPM)") +
-  theme_classic()
-
+```{=html}
+<div style="display: flex; flex-direction: column;">
+  <center><img src="images/tempogram1.png" alt="Voodoo Child (Slight Return) - Jimi Hendrix" style="width: 50%; height: 50%"></center>
+  <center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2AxCeJ6PSsBYiTckM0HLY7?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
+  <center><img src="images/tempogram2.png" alt="The Message - Grandmaster Flash & The Furious Five" style="width: 50%; height: 50%"></center>
+  <center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5isA9icHWl2651hvfr1EOV?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
+  
+</div>
 ```
 
-An idea that came to me was if I could see which song is the least danceable v.s. the song that is most danceable, and make two tempograms out of them. Because beat/tempo consistency is a part of the danceability feature, I would expect the most danceable song to have a high beat consistency, whereas the least danceable song is expected to have a lot of tempo variation.
+------------------------------------------------------------------------
 
-I have chosen to take the top 3 most and least danceable songs and to take the most interesting one out of each one.\
-\
+An idea that came to me was if I could see which song is the least danceable v.s. the song that is most danceable, and compare the two tempograms of them. Because beat/tempo consistency is a part of the danceability feature, I would expect the most danceable song to have a high beat consistency (visible in a tempogram as a horizontal line), whereas the least danceable song is expected to have a lot of tempo variation.
+
+I have decided to take the top 3 most and least danceable songs and to take the most interesting one out of each one.
+
 Let's look at the two songs!
 
 -   **Least danceable song:** Voodoo Child (Slight Return) - Jimi Hendrix
 
 -   **Most danceable song:** The Message - Grandmaster Flash & The Furious Five
+
+At a glance you can immediately see that the tempograms are very different from each other; the tempogram of **The Message** is very consistent around 100 BPM, whereas **Voodoo Child**'s tempogram is all over the place, with no clear line through it.
+
+This is actually quite logical if we look at the definition of the danceability feature: "*Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.*" The tempo in **The Message** is very stable and regular and has a tempo of 101 BPM, which is very close to [the most danceable tempo, which is 100 bpm.](https://socialdance.stanford.edu/Syllabi/DJtips.htm)
+
+When we look at the least danceable track **Voodoo Child**, we see that it doesn't have a stable tempo, which is most likely due to it being a very old track (little to no pre-processing) in which the drummer probably follows Jimi Hendrix his guitar playing which can be all over the place sometimes. The track sounds more like a jam, in which it's hard to stick to a certain tempo. I do believe the generated tempogram doesn't accurately capture the tempo for this song, in reality the song is centered around 88 BPM and deviates a little from this throughout the track.
+
+I would say that danceability is an important factor when it comes to my personal taste in music. I tend to gravitate towards music that has a strong beat and rhythm (higher danceability), which is reflected in the median danceability being 0.65.
+
+.
+
+.
+
+.
 
 ### Old Playlist v.s. New Playlist
 
