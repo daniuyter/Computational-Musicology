@@ -410,7 +410,7 @@ Whereas in Jimi's version, the ending doesn't have emphasis on specific notes, w
 # Cepstogram {data-navmenu="-ograms"}
 
 ```{=html}
-<center><img src="images/cepstogram.png" alt="Cepstogram Pompette" style="width: 80%; height: 100%"></center>
+<center><img src="images/cepstogram.png" alt="Cepstogram Pompette" style="width: 60%; height: 80%"></center>
 ```
 .
 
