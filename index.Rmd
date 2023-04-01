@@ -1,17 +1,14 @@
 ---
 title: "Computational Musicology Portfolio"
 author: "Daniel Uyterlinde"
-date: "22 February 2023"
+date: "April 1st, 2023"
 output:
   flexdashboard::flex_dashboard:
     storyboard: true
-    theme: yeti
-    params:
-      theme: yeti
-      base_font:
-        google: Raleway
+    theme:
+      version: 4
+      bootswatch: minty
     self_contained: false
-    orientation: rows
 ---
 
 ------------------------------------------------------------------------
@@ -29,6 +26,8 @@ library(fmsb)
 
 # Welcome to my portfolio!
 
+**Welcome to my portfolio!**
+
 For my corpus, i have chosen my own personal playlist: **Big Music Mountain**. It is basically a (\~600 song) playlist with the songs I like most across all genres. Basically every song I come across and really like is included in it. I chose this playlist as my corpus because it represents my own taste in music really well, and I hope to gain some insights into that by analyzing the Big Music Mountain.
 
 The playlist mostly consists of my selection of good songs per album (or entire albums if all songs are good), so inside these albums there will be similarities, but across the albums there will be some differences. However, parts of the playlist are pretty similar (a Dire Straits album vs a Doors album will have quite some similarities).
@@ -39,7 +38,7 @@ Big Music Mountain mostly consists of:
 
 -   **Indie** (Sticky Fingers, Mako Road, Dope Lemon, Jungle)
 
--   **Reggae** (Bob Marley, Billie Boyo, Eek-A-Mouse)
+-   **Reggae** (Bob Marley, Billy Boyo, Eek-A-Mouse)
 
 -   **Blues** (Dire Straits, The Doors, Tony Joe White)
 
@@ -77,7 +76,7 @@ bigmusicmountain <-
 
 ### How do we find the most typical and atypical songs for the Big Music Mountain playlist?
 
-What are the most typical and atypical songs in the Big Music Mountain playlist?
+**What are the most typical and atypical songs in the Big Music Mountain playlist?**
 
 My guess would be, because a large portion of the playlist are songs by Dire Straits, Red Hot Chili Peppers and Jimi Hendrix, that Castles Made of Sand is a pretty typical song in the list, as it is originally played by Jimi Hendrix, but covered by the Peppers. It sounds a little like a Dire Straits song too, and the text is in a similar style to that of the Dire Straits. Some very atypical songs are mostly 'guilty' pleasures, like Blue Monday and Young Guns by Wham.
 
@@ -162,7 +161,7 @@ music_data <- bigmusicmountain %>%
 plots <- lapply(unique(music_data$feature), function(feature) {
   ggplot(data = music_data[music_data$feature == feature,], 
          aes(x = feature, y = value, fill = "#49adca")) +
-    geom_violin(fill="#49adca") +
+    geom_violin(fill="#78c2ae") +
     labs(title = feature) +
     theme_minimal() +
     theme(legend.position = "none")
@@ -189,51 +188,35 @@ The next step in our process of finding the most (a)typical song in the Big Musi
 
 ### Which songs are the most typical and atypical for the Big Music Mountain playlist?
 
+**Which songs are the most typical and atypical for the Big Music Mountain playlist?**
+
 To find which song is most typical for the Big Music Mountain, and therefore also for my taste in music, I have calculated the Euclidean distance from each song's features to the median value for that feature, and added these up. Then the smallest distance can be read off for the most typical song, and the highest distance for the most atypical song. I have made a top 3 for typical and atypical songs.
 
 I have chosen to only include the variables which range from 0-1, because a variable like tempo can range from (e.g.) 60 to 180, and therefore weigh in much stronger. I have tried scaling the variables that don't range from 0-1, but found that the results were less accurate to my actual music taste.
 
 Here is what I have found!
 
-**Most typical songs:**
-
-1.  In The Gallery - Dire Straits
-
-    ```{=html}
-    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5SXemxLERs0imkLpe4Aq8v?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    ```
-
-2.  Money For Nothing - Dire Straits
-
-    ```{=html}
-    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4bO6DljpuAeQh6HS20i0I5?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    ```
-
-3.  One of These Nights - Eagles
-
-    ```{=html}
-    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/608xszaAxVh4m7NcKJiAbF?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    ```
-
-**Most atypical songs:**
-
-1.  Private Investigations - Dire Straits
-
-    ```{=html}
-    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5KVak7r5YKcnkmARc0hy0Q?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    ```
-
-2.  Green Onions - Booker T. & The M.G.'s
-
-    ```{=html}
-    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4fQMGlCawbTkH9yPPZ49kP?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    ```
-
-3.  Brothers In Arms - Dire Straits
-
-    ```{=html}
-    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/60bF2b61f7Q5Bt82QCBwvc?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-    ```
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Most typical songs:                                                                                                                                                                                                                                                                               | Most atypical songs:                                                                                                                                                                                                                                                                              |
++:=================================================================================================================================================================================================================================================================================================:+:=================================================================================================================================================================================================================================================================================================:+
+| 1\. In The Gallery - Dire Straits                                                                                                                                                                                                                                                                 | 1\. Private Investigations - Dire Straits                                                                                                                                                                                                                                                         |
+|                                                                                                                                                                                                                                                                                                   |                                                                                                                                                                                                                                                                                                   |
+| ```{=html}                                                                                                                                                                                                                                                                                        | ```{=html}                                                                                                                                                                                                                                                                                        |
+| <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5SXemxLERs0imkLpe4Aq8v?utm_source=generator" width="80%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe> | <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5KVak7r5YKcnkmARc0hy0Q?utm_source=generator" width="80%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe> |
+| ```                                                                                                                                                                                                                                                                                               | ```                                                                                                                                                                                                                                                                                               |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 2\. Money For Nothing - Dire Straits                                                                                                                                                                                                                                                              | 2\. Green Onions - Booker T. & The M.G.'s                                                                                                                                                                                                                                                         |
+|                                                                                                                                                                                                                                                                                                   |                                                                                                                                                                                                                                                                                                   |
+| ```{=html}                                                                                                                                                                                                                                                                                        | ```{=html}                                                                                                                                                                                                                                                                                        |
+| <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4bO6DljpuAeQh6HS20i0I5?utm_source=generator" width="80%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe> | <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/4fQMGlCawbTkH9yPPZ49kP?utm_source=generator" width="80%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe> |
+| ```                                                                                                                                                                                                                                                                                               | ```                                                                                                                                                                                                                                                                                               |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| 3\. One of These Nights - Eagles                                                                                                                                                                                                                                                                  | 3\. Brothers In Arms - Dire Straits                                                                                                                                                                                                                                                               |
+|                                                                                                                                                                                                                                                                                                   |                                                                                                                                                                                                                                                                                                   |
+| ```{=html}                                                                                                                                                                                                                                                                                        | ```{=html}                                                                                                                                                                                                                                                                                        |
+| <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/608xszaAxVh4m7NcKJiAbF?utm_source=generator" width="80%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe> | <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/60bF2b61f7Q5Bt82QCBwvc?utm_source=generator" width="80%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe> |
+| ```                                                                                                                                                                                                                                                                                               | ```                                                                                                                                                                                                                                                                                               |
++---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 ```{r}
 
@@ -320,9 +303,9 @@ An interesting thing to point out is that Brothers In Arms is actually my favori
 
 ------------------------------------------------------------------------
 
-# Chromagrams {.storyboard data-navmenu="-ograms"}
+# -ograms and matrices {.storyboard}
 
-### Private Investigations - Dire Straits
+### Chromagrams: Private Investigations - Dire Straits
 
 ```{r}
 #wood <-
@@ -378,7 +361,7 @@ Let's look at the chromagram now! I have marked several sections in the chromagr
 
 -   **Section 5** (5:45-6:45): This is the outro, which once again is very similar to the introduction and third part. The same instruments are playing, and the song slowly fades to an end over a low E bass note.
 
-### Castles Made Of Sand - Jimi Hendrix / Red Hot Chili Peppers
+### Chromagrams: Castles Made Of Sand - Jimi Hendrix / Red Hot Chili Peppers
 
 ```{=html}
 <center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/3pqFE3RGj0ZVc4llJz5Nmr?utm_source=generator" width="80%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
@@ -401,13 +384,13 @@ I have made a chromagram of both songs to analyse what similarities and differen
 
 In the Red Hot Chili Peppers cover version, the song is slowed down a bit in respect to Jimi's version, which we can see by the chromagram being a bit longer. There is one point in the song though (marked with the red bars) where the Chili Peppers speed up a lot for around 20 seconds, which is visible in the chromagram by the shorter intervals of the yellow bars.
 
-The second thing that appeared to me was that it isn't entirely clear which key the Jimi Hendrix version is in. It looks like either G or F#, whereas the Chili Peppers version is clearly in F#. Jimi Hendrix famously tuned his guitar a half step down, so instead of the standard tuning E A D G B E, he often used Eb Ab Db Gb Bb Eb. I know from the guitar chords that the song is in F#, so I assume the recording quality of Jimi's version is a little lower, resulting in less clearly emphasised notes. The Red Hot Chili peppers version has a 20+ year advantage on production technology, so sounds more compressed and clear.
+The second thing that appeared to me was that it isn't entirely clear which key the Jimi Hendrix version is in. It looks like either G or F#, whereas the Chili Peppers version is clearly in F#. Jimi Hendrix famously tuned his guitar a half step down, so instead of the standard tuning E A D G B E, he often used Eb Ab Db Gb Bb Eb. I know from the guitar chords that the song is in F#, so I assume the recording quality of Jimi's version is a little lower, resulting in less clearly emphasised notes, or Jimi simply didn't tune his guitar too well. The Red Hot Chili peppers version has a 20+ year advantage on production technology, so sounds more compressed and clear.
 
 The same chord progression can be seen in both songs, with a strong emphasis on the notes F#, G#, E, Eb and C#.
 
 Whereas in Jimi's version, the ending doesn't have emphasis on specific notes, we see in the Peppers' version that the chromagram very clearly displays the key Gb, along with some C#. They actually play the same outro, but Jimi's version has more feedback, which probably caused it to smear out the frequencies across all notes.
 
-# Cepstogram {data-navmenu="-ograms"}
+### Cepstrogram: Timbre feature analysis of Pompette - Jungle By Night.
 
 ```{=html}
 <center><img src="images/cepstogram.png" alt="Cepstogram Pompette" style="width: 60%; height: 80%"></center>
@@ -422,15 +405,269 @@ Whereas in Jimi's version, the ending doesn't have emphasis on specific notes, w
 
 ------------------------------------------------------------------------
 
-A cepstrogram is a different kind of audio-analysis visualisation, in which timbre features are plotted over time. These features aren't really well known, but we know that the c01 coefficient corresponds to loudness, c02 to bright tones, c03 to mid range tones. After this the coefficients get a little hard to put into words. In this case I have chosen to split the time steps up in sections.
+A **cepstrogram** is a different kind of audio-analysis visualisation, in which timbre features are plotted over time. These features aren't really well known, but we know that the c01 coefficient corresponds to loudness, c02 to bright tones, c03 to mid range tones. After this the coefficients get a little hard to put into words. In this case I have chosen to split the time steps up in sections.
 
-In this plot we see the cepstogram of Pompette, by Dutch band Jungle By Night. It is an instrumental song with a lot of different instruments. We see that a lot of the timbre coefficients are present in this song, which is most likely due to the large amount of instruments with different timbre, all producing very different sounds.
+In this plot we see the cepstrogram of Pompette, by Dutch band Jungle By Night. It is an instrumental song with [a lot of different instruments](https://junglebynight.com/about/). We see that a lot of the timbre coefficients are present in this song, which is most likely due to the large amount of instruments with different timbre, all producing very different sounds.
 
-There is one very interesting part of the cepstogram, from around 220-250 seconds, in which we see most the most present timbre coefficient jump from c01 to c02. c01 corresponds with loudness and in this part there is a somewhat quiet percussion solo, explaining why the c01 coefficient is less present here. The c02 coefficient corresponding to bright tones is clear here, as the percussion instrument plays a high tone.
+There is one very interesting part of the cepstrogram, from around 220-250 seconds, in which we see most the most present timbre coefficient jump from c01 to c02. c01 corresponds with loudness and in this part there is a somewhat quiet percussion solo, explaining why the c01 coefficient is less present here. The c02 coefficient corresponding to bright tones is clear here, as the percussion instrument plays a high tone.
 
 The outro of the song is a synthesizer playing a scale repeatedly, which also causes the timbre coefficients to switch up a bit.
 
-# Acousticness vs. Energy {.storyboard data-navmenu="Extra Visualisations"}
+### Tempograms: Difference between the tempograms of the most and least danceable songs.
+
+```{=html}
+<div style="display: flex; flex-direction: column;">
+  <center><img src="images/tempogram1.png" alt="Voodoo Child (Slight Return) - Jimi Hendrix" style="width: 50%; height: 50%"></center>
+  <center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2AxCeJ6PSsBYiTckM0HLY7?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
+  <center><img src="images/tempogram2.png" alt="The Message - Grandmaster Flash & The Furious Five" style="width: 50%; height: 50%"></center>
+  <center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5isA9icHWl2651hvfr1EOV?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
+  
+</div>
+```
+
+------------------------------------------------------------------------
+
+An idea that came to me was if I could see which song is the least danceable v.s. the song that is most danceable, and compare the two tempograms of them. Because beat/tempo consistency is a part of the danceability feature, I would expect the most danceable song to have a high beat consistency (visible in a tempogram as a horizontal line), whereas the least danceable song is expected to have a lot of tempo variation.
+
+I have decided to take the top 3 most and least danceable songs and to take the most interesting one out of each one.
+
+Let's look at the two songs!
+
+-   **Least danceable song:** Voodoo Child (Slight Return) - Jimi Hendrix
+
+-   **Most danceable song:** The Message - Grandmaster Flash & The Furious Five
+
+At a glance you can immediately see that the tempograms are very different from each other; the tempogram of **The Message** is very consistent around 100 BPM, whereas **Voodoo Child**'s tempogram is all over the place, with no clear line through it.
+
+This is actually quite logical if we look at the definition of the danceability feature: "*Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.*" The tempo in **The Message** is very stable and regular and has a tempo of 101 BPM, which is very close to [the most danceable tempo, which is 100 bpm.](https://socialdance.stanford.edu/Syllabi/DJtips.htm)
+
+When we look at the least danceable track **Voodoo Child**, we see that it doesn't have a stable tempo, which is most likely due to it being a very old track (little to no pre-processing) in which the drummer probably follows Jimi Hendrix his guitar playing which can be all over the place sometimes. The track sounds more like a jam, in which it's hard to stick to a certain tempo. I do believe the generated tempogram doesn't accurately capture the tempo for this song, in reality the song is centered around 88 BPM and deviates a little from this throughout the track.
+
+I would say that danceability is an important factor when it comes to my personal taste in music. I tend to gravitate towards music that has a strong beat and rhythm (higher danceability), which is reflected in the median danceability being 0.65.
+
+### Chordogram
+
+.
+
+.
+
+```{=html}
+<center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2Sjez1CwJv8Pz018CxKjWa?utm_source=generator" width="75%" height="300" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
+```
+```{=html}
+<center><img src="images/chordogram.png" alt="Chordogram" style="width: 80%; height: 80%"></center>
+```
+```{r}
+# circshift <- function(v, n) {
+#   if (n == 0) v else c(tail(v, n), head(v, -n))
+# }
+# 
+# #      C     C#    D     Eb    E     F     F#    G     Ab    A     Bb    B
+# major_chord <-
+#   c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    0,    0)
+# minor_chord <-
+#   c(   1,    0,    0,    1,    0,    0,    0,    1,    0,    0,    0,    0)
+# seventh_chord <-
+#   c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    1,    0)
+# 
+# major_key <-
+#   c(6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88)
+# minor_key <-
+#   c(6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17)
+# 
+# chord_templates <-
+#   tribble(
+#     ~name, ~template,
+#     "Gb:7", circshift(seventh_chord, 6),
+#     "Gb:maj", circshift(major_chord, 6),
+#     "Bb:min", circshift(minor_chord, 10),
+#     "Db:maj", circshift(major_chord, 1),
+#     "F:min", circshift(minor_chord, 5),
+#     "Ab:7", circshift(seventh_chord, 8),
+#     "Ab:maj", circshift(major_chord, 8),
+#     "C:min", circshift(minor_chord, 0),
+#     "Eb:7", circshift(seventh_chord, 3),
+#     "Eb:maj", circshift(major_chord, 3),
+#     "G:min", circshift(minor_chord, 7),
+#     "Bb:7", circshift(seventh_chord, 10),
+#     "Bb:maj", circshift(major_chord, 10),
+#     "D:min", circshift(minor_chord, 2),
+#     "F:7", circshift(seventh_chord, 5),
+#     "F:maj", circshift(major_chord, 5),
+#     "A:min", circshift(minor_chord, 9),
+#     "C:7", circshift(seventh_chord, 0),
+#     "C:maj", circshift(major_chord, 0),
+#     "E:min", circshift(minor_chord, 4),
+#     "G:7", circshift(seventh_chord, 7),
+#     "G:maj", circshift(major_chord, 7),
+#     "B:min", circshift(minor_chord, 11),
+#     "D:7", circshift(seventh_chord, 2),
+#     "D:maj", circshift(major_chord, 2),
+#     "F#:min", circshift(minor_chord, 6),
+#     "A:7", circshift(seventh_chord, 9),
+#     "A:maj", circshift(major_chord, 9),
+#     "C#:min", circshift(minor_chord, 1),
+#     "E:7", circshift(seventh_chord, 4),
+#     "E:maj", circshift(major_chord, 4),
+#     "G#:min", circshift(minor_chord, 8),
+#     "B:7", circshift(seventh_chord, 11),
+#     "B:maj", circshift(major_chord, 11),
+#     "D#:min", circshift(minor_chord, 3)
+#   )
+# 
+# key_templates <-
+#   tribble(
+#     ~name, ~template,
+#     "Gb:maj", circshift(major_key, 6),
+#     "Bb:min", circshift(minor_key, 10),
+#     "Db:maj", circshift(major_key, 1),
+#     "F:min", circshift(minor_key, 5),
+#     "Ab:maj", circshift(major_key, 8),
+#     "C:min", circshift(minor_key, 0),
+#     "Eb:maj", circshift(major_key, 3),
+#     "G:min", circshift(minor_key, 7),
+#     "Bb:maj", circshift(major_key, 10),
+#     "D:min", circshift(minor_key, 2),
+#     "F:maj", circshift(major_key, 5),
+#     "A:min", circshift(minor_key, 9),
+#     "C:maj", circshift(major_key, 0),
+#     "E:min", circshift(minor_key, 4),
+#     "G:maj", circshift(major_key, 7),
+#     "B:min", circshift(minor_key, 11),
+#     "D:maj", circshift(major_key, 2),
+#     "F#:min", circshift(minor_key, 6),
+#     "A:maj", circshift(major_key, 9),
+#     "C#:min", circshift(minor_key, 1),
+#     "E:maj", circshift(major_key, 4),
+#     "G#:min", circshift(minor_key, 8),
+#     "B:maj", circshift(major_key, 11),
+#     "D#:min", circshift(minor_key, 3)
+#   )
+# 
+# outoftime <-
+#   get_tidy_audio_analysis("2Sjez1CwJv8Pz018CxKjWa") |>
+#   compmus_align(sections, segments) |>
+#   select(sections) |>
+#   unnest(sections) |>
+#   mutate(
+#     pitches =
+#       map(segments,
+#         compmus_summarise, pitches,
+#         method = "mean", norm = "manhattan"
+#       )
+#   )
+# 
+# outoftime |> 
+#   compmus_match_pitch_template(
+#     chord_templates,         # Change to chord_templates if descired
+#     method = "euclidean",  # Try different distance metrics
+#     norm = "manhattan"     # Try different norms
+#   ) |>
+#   ggplot(
+#     aes(x = start + duration / 2, width = duration, y = name, fill = d)
+#   ) +
+#   geom_tile() +
+#   scale_fill_viridis_c(guide = "none") +
+#   theme_minimal() +
+#   labs(x = "Time (s)", y = "")
+# 
+
+```
+
+------------------------------------------------------------------------
+
+A chordogram is a way to visualise which chord is being played at a certain moment. This is the chordogram of **Cars Hiss by My Window** by **The Doors**. It is a bluesy slow song, with 3 main simple chords.
+
+This song is a perfect example of a I-IV-V blues chord progression, which we can see in the chordogram. The simplicity of the I-IV-V progression allows for a lot of room for improvisation and soloing, which is a key element of blues music. The I-IV-V progression is often used in a 12-bar blues format, which consists of three lines of four bars each, which is the case for this song too.
+
+We see that the main present chord is an E7. The Em chord is also present a lot, but this is due to the Em chord containing all the notes that an E7 has too. The song mainly alternates between E7 (I) and A7 (IV), and moves to a B7 (V) before a turnaround brings it back to E7.
+
+The last part of the song is mostly improvised over a simpler variant of the progression, which we see indicated by the lesser amount of 'noise' in the chordogram, mostly being concentrated on E7.
+
+A [fun fact about the song](https://www.teamrock.com/features/2014-11-10/l-a-woman-and-the-last-days-of-jim-morrison), is that along with two other songs in the album L.A. Woman, **Crawling King Snake** and **Been down so Long,** Cars Hiss by My Window was recorded on the very last day of recording, on a day which the band had called 'blues day'. These are the three main blues songs on the album, whereas the rest of the songs are more Rock oriented.
+
+### Self Similarity Matrices: Timbre- and Chroma-feature analysis of Berlin Got Blurry - Parquet Courts
+
+.
+
+.
+
+.
+
+```{=html}
+<center><iframe style="border-radius:18px" src="https://open.spotify.com/embed/track/2j1GZkUfbUpTjyETN9WRX7?utm_source=generator" width="75%" height="300" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
+```
+```{r}
+# 
+# maria <-
+#   get_tidy_audio_analysis("2j1GZkUfbUpTjyETN9WRX7") |>
+#   compmus_align(bars, segments) |>
+#   select(bars) |>
+#   unnest(bars) |>
+#   mutate(
+#     pitches =
+#       map(segments,
+#         compmus_summarise, pitches,
+#         method = "acentre", norm = "manhattan"
+#       )
+#   ) |>
+#   mutate(
+#     timbre =
+#       map(segments,
+#         compmus_summarise, timbre,
+#         method = "mean"
+#       )
+#   )
+# bind_rows(
+#   maria |>
+#     compmus_self_similarity(pitches, "aitchison") |>
+#     mutate(d = d / max(d), type = "Chroma"),
+#   maria |>
+#     compmus_self_similarity(timbre, "euclidean") |>
+#     mutate(d = d / max(d), type = "Timbre")
+# ) |>
+#   mutate() |>
+#   ggplot(
+#     aes(
+#       x = xstart + xduration / 2,
+#       width = xduration,
+#       y = ystart + yduration / 2,
+#       height = yduration,
+#       fill = d
+#     )
+#   ) +
+#   geom_tile() +
+#   coord_fixed() +
+#   facet_wrap(~type) +
+#   scale_fill_viridis_c(guide = "none") +
+#   theme_classic() +
+#   labs(x = "", y = "")
+
+```
+
+![](images/ssm.png)
+
+------------------------------------------------------------------------
+
+**Self-similarity matrices** are a good way of representing patterns within a song by comparing different sections of the song to each other (to itself).
+
+For chroma features, self-similarity matrices are created by comparing the chroma vectors of different time frames in the recording, whereas for timbre features, self-similarity matrices are created by compar ing the timbre vectors of different time frames in the song. By analyzing these matrices we can identify repeating patterns or motifs within the song.
+
+**Let's take a look at the self-similarity matrices!** I have chosen the song Berlin Got Blurry by Parquet Courts, another one of my favorite bands.
+
+There are several interesting moments if we look at the **chroma**-based self-similarity matrix, starting with the smallest checkerboard pattern (like the one in the first \~10 seconds) in the matrix, which we see occurring about 5 times throughout the song.
+
+What this checkerboard pattern means is that there's a part (same notes in the chroma case) in the song that's repeated more often; in this case it's a guitar part that's repeated throughout the song before each verse, which leads us to the second checkerboard pattern, the verses.
+
+These are the larger black squares, which we see repeated 3 clear times. During this part the vocals are most present, and the instruments play the same notes/chords throughout the verse (\~30 seconds), resulting in similarities with the next verse, in which this is also the case (therefore creating a dark square in the matrix).
+
+The last thing that's apparent is that the final \~10 seconds have very different timbre and chroma values, since this part appears brighter than the rest of the matrix, and has no correlation with other parts in the song, resulting in a vertical bar.
+
+The **timbre** however, stays quite regular throughout the song, with only 2 clear outliers; the outro (which I discussed above) and the part from \~115-130 seconds, during which the [guitarist](https://en.wikipedia.org/wiki/Andrew_Savage_(artist)) plays a solo. During this solo, the guitar plays higher pitched notes and has a different (brighter and distorted) tone. This results in a vertical bar in the timbre matrix which equates to a difference in timbre from the rest of the song.
+
+# Extra visualizations & analyses {.storyboard}
+
+### Acousticness vs. Energy
 
 ```{r}
 
@@ -448,11 +685,25 @@ ggplotly(g)
 
 ------------------------------------------------------------------------
 
-In this plot we see the energy plotted against the logarithm of the acousticness for songs in the Big Music Mountain. The dots all represent songs, with the size of the dots representing instrumentalness and the color valence. I also plotted a smoothed curve across the data, in which a clear relationship can be seen across the accousticness / energy data, that when a song gets more acoustic, the energy tends to get lower. I think this relationship is quite logical, as acoustic songs are often slower and less noisy.
+In this plot we see the energy plotted against the logarithm of the acousticness for songs in the Big Music Mountain. The dots all represent songs, with the size of the dots representing instrumentalness and the color valence. I also plotted a smoothed curve across the data, in which a clear relationship can be seen across the acousticness / energy data, that when a song gets more acoustic, the energy tends to get lower. I think this relationship is quite logical, as acoustic songs are often slower and less noisy.
 
 The second relationship that can be seen in the plot, is that the lower the dots get, the darker they tend to be. This means that the lower the songs are in energy, the lower the valence tends to be. This means that low energy songs are often more negative/sadder.
 
+### Old Playlist vs. New Playlist
+
+![](images/bigmusicmountain_surf.png)
+
+------------------------------------------------------------------------
+
+Here we see a timbre vector comparison between my new big playlist (and this corpus) bigmusicmountain, and my old playlist, called surf. In the plot we see a violin plot of each of the 12 timbre features spotify computes, across both playlists.
+
+As can be seen in the image, my taste in music hasn't changed a lot when comparing timbre features. A lot of songs moved from the old playlist to the new one too, so that might be an explanation for that.
+
+We see a few differences, mostly for the bigmusicmountain violins, that their ranges are bigger. This is most likely due to the fact that the bigmusicmountain (new playlist) has 587 songs, whereas the surf (old) playlist has only 188 songs, so naturally there will be a bigger range of timbre feature values.
+
 ### K-Means clustering
+
+I recommend zooming out once with the **-** button at the top right corner of the graph, for a better perspective.
 
 ```{r}
 
@@ -519,61 +770,6 @@ The identified clusters coincide with my taste in music a lot in a certain way. 
 #print(clustered_songs)
 ```
 
-### Chromagram
-
-```{r}
-wood <-
-  get_tidy_audio_analysis("5KVak7r5YKcnkmARc0hy0Q?si=f1a0307cd2cf4b49") |>
-  select(segments) |>
-  unnest(segments) |>
-  select(start, duration, pitches)
-
-wood |>
-  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
-  compmus_gather_chroma() |> 
-  ggplot(
-    aes(
-      x = start + duration / 2,
-      width = duration,
-      y = pitch_class,
-      fill = value
-    )
-  ) +
-  geom_tile() +
-  geom_vline(xintercept = c(51, 229), color = "red") +
-  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
-  theme_minimal() +
-  scale_fill_viridis_c()
-
-
-#castlesrhcp <- get_tidy_audio_analysis("7mUNyl16vX2OrKqMAuZJF9") %>%
-#  select(segments) %>%
- # unnest(segments) %>%
-  #select(start, duration, pitches)
-
-#castles <- bind_rows(
- # castlesjimi %>% mutate(song = "Jimi Hendrix"),
-  #castlesrhcp %>% mutate(song = "Red Hot Chili Peppers")
-#)
-
-#castles %>%
-#  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
-#  compmus_gather_chroma() %>%
-#  ggplot(aes(
-#    x = start + duration / 2,
-#    width = duration * 2,
-#    y = pitch_class,
-#    fill = value
-#  )) +
-#  geom_tile() +
-#  labs(x = "Time (s)", y = NULL, fill = "Magnitude", title = "Castles Made of Sand") +
-#  theme_minimal() +
-#  scale_fill_viridis_c() +
-#  facet_grid(rows = vars(song))
-```
-
-### Dynamic time warping
-
 ```{r}
 #compmus_long_distance(
 #  castlesjimi |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
@@ -597,66 +793,6 @@ wood |>
 #  scale_fill_viridis_c(guide = NULL)
 ```
 
-### Cepstogram
-
-```{r}
-#  dernkala <-
-#   get_tidy_audio_analysis("0eOBMq9SIuDtkvKLA873pu") |> # Change URI.
-#   compmus_align(sections, segments) |>                     # Change `bars`
-#   select(sections) |>                                      #   in all three
-#   unnest(sections) |>                                      #   of these lines.
-#   mutate(
-#     pitches =
-#       map(segments,
-#         compmus_summarise, pitches,
-#         method = "rms", norm = "euclidean"              # Change summary & norm.
-#       )
-#   ) |>
-#   mutate(
-#     timbre =
-#       map(segments,
-#         compmus_summarise, timbre,
-#         method = "rms", norm = "euclidean"              # Change summary & norm.
-#       )
-#   )
-#  
-#  dernkala |>
-#   compmus_gather_timbre() |>
-#   ggplot(
-#     aes(
-#       x = start + duration / 2,
-#       width = duration,
-#       y = basis,
-#       fill = value
-#     )
-#   ) +
-#   geom_tile() +
-#   geom_vline(xintercept = c(221, 252), color = "red") +
-#   
-#   labs(x = "Time (s)", y = NULL, title="Cepstogram of Pompette - Jungle By Night", fill = "Magnitude") +
-#   scale_fill_viridis_c() +                              
-#   theme_classic()
-```
-
-```{=html}
-<center><img src="images/cepstogram.png" alt="Cepstogram Pompette" style="width: 80%; height: 100%"></center>
-```
-```{=html}
-<center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/0eOBMq9SIuDtkvKLA873pu?utm_source=generator" width="50%" height="200" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
-```
-
-------------------------------------------------------------------------
-
-A cepstrogram is a different kind of audio-analysis visualisation, in which timbre features are plotted over time. These features aren't really well known, but we know that the c01 coefficient corresponds to loudness, c02 to bright tones, c03 to mid range tones. After this the coefficients get a little hard to put into words. In this case I have chosen to split the time steps up in sections.
-
-In this plot we see the cepstogram of Pompette, by Dutch band Jungle By Night. It is an instrumental song with a lot of different instruments. We see that a lot of the timbre coefficients are present in this song, which is most likely due to the large amount of instruments with different timbre, all producing very different sounds.
-
-There is one very interesting part of the cepstogram, from around 220-250 seconds, in which we see most the most present timbre coefficient jump from c01 to c02. c01 corresponds with loudness and in this part there is a somewhat quiet percussion solo, explaining why the c01 coefficient is less present here. The c02 coefficient corresponding to bright tones is clear here, as the percussion instrument plays a high tone.
-
-The outro of the song is a synthesizer playing a scale repeatedly, which also causes the timbre coefficients to switch up a bit.
-
-### Self similarity matrix
-
 ```{r}
 # dernkala |>
 #   compmus_self_similarity(timbre, "cosine") |> 
@@ -677,181 +813,26 @@ The outro of the song is a synthesizer playing a scale repeatedly, which also ca
 
 ```
 
-### Chordogram
+# Final Thoughts {.storyboard}
 
-```{r}
-circshift <- function(v, n) {
-  if (n == 0) v else c(tail(v, n), head(v, -n))
-}
+### Final thoughts & Conclusion
 
-#      C     C#    D     Eb    E     F     F#    G     Ab    A     Bb    B
-major_chord <-
-  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    0,    0)
-minor_chord <-
-  c(   1,    0,    0,    1,    0,    0,    0,    1,    0,    0,    0,    0)
-seventh_chord <-
-  c(   1,    0,    0,    0,    1,    0,    0,    1,    0,    0,    1,    0)
+During this project I have made various visualisations and analyses to gain a deeper insight into my own taste in music, through my corpus 'Big Music Mountain'; my own playlist representing my taste in music with almost every song I really like.
 
-major_key <-
-  c(6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88)
-minor_key <-
-  c(6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17)
+Perhaps the most interesting thing I learned during this project was the typical vs. atypical song analysis. In this part I found out that the most atypical song in my playlist was actually my favorite one! The typical songs more or less aligned with my expectations. Especially the violin plots in the 'Typical or Atypical' section have made me gain some insight into my music preferences; I learned that overall, the songs I like are positive, happy, relatively danceable and high energy.
 
-chord_templates <-
-  tribble(
-    ~name, ~template,
-    "Gb:7", circshift(seventh_chord, 6),
-    "Gb:maj", circshift(major_chord, 6),
-    "Bb:min", circshift(minor_chord, 10),
-    "Db:maj", circshift(major_chord, 1),
-    "F:min", circshift(minor_chord, 5),
-    "Ab:7", circshift(seventh_chord, 8),
-    "Ab:maj", circshift(major_chord, 8),
-    "C:min", circshift(minor_chord, 0),
-    "Eb:7", circshift(seventh_chord, 3),
-    "Eb:maj", circshift(major_chord, 3),
-    "G:min", circshift(minor_chord, 7),
-    "Bb:7", circshift(seventh_chord, 10),
-    "Bb:maj", circshift(major_chord, 10),
-    "D:min", circshift(minor_chord, 2),
-    "F:7", circshift(seventh_chord, 5),
-    "F:maj", circshift(major_chord, 5),
-    "A:min", circshift(minor_chord, 9),
-    "C:7", circshift(seventh_chord, 0),
-    "C:maj", circshift(major_chord, 0),
-    "E:min", circshift(minor_chord, 4),
-    "G:7", circshift(seventh_chord, 7),
-    "G:maj", circshift(major_chord, 7),
-    "B:min", circshift(minor_chord, 11),
-    "D:7", circshift(seventh_chord, 2),
-    "D:maj", circshift(major_chord, 2),
-    "F#:min", circshift(minor_chord, 6),
-    "A:7", circshift(seventh_chord, 9),
-    "A:maj", circshift(major_chord, 9),
-    "C#:min", circshift(minor_chord, 1),
-    "E:7", circshift(seventh_chord, 4),
-    "E:maj", circshift(major_chord, 4),
-    "G#:min", circshift(minor_chord, 8),
-    "B:7", circshift(seventh_chord, 11),
-    "B:maj", circshift(major_chord, 11),
-    "D#:min", circshift(minor_chord, 3)
-  )
+In addition to the typical vs. atypical song analysis, I have also made several track-level analyses. These included chromagrams depicting the distribution of chroma- (notes / key) and timbre (the 'shape' of the sound) features throughout the tracks. The tempograms have given me a view into the danceability feature, a feature which my playlist scores quite high on. The rest of the -ograms, as i have called them (inspired by my lecturer Ashley Burgoyne), were mostly insights into individual tracks and haven't contributed much to my main question (although being very interesting to see!).
 
-key_templates <-
-  tribble(
-    ~name, ~template,
-    "Gb:maj", circshift(major_key, 6),
-    "Bb:min", circshift(minor_key, 10),
-    "Db:maj", circshift(major_key, 1),
-    "F:min", circshift(minor_key, 5),
-    "Ab:maj", circshift(major_key, 8),
-    "C:min", circshift(minor_key, 0),
-    "Eb:maj", circshift(major_key, 3),
-    "G:min", circshift(minor_key, 7),
-    "Bb:maj", circshift(major_key, 10),
-    "D:min", circshift(minor_key, 2),
-    "F:maj", circshift(major_key, 5),
-    "A:min", circshift(minor_key, 9),
-    "C:maj", circshift(major_key, 0),
-    "E:min", circshift(minor_key, 4),
-    "G:maj", circshift(major_key, 7),
-    "B:min", circshift(minor_key, 11),
-    "D:maj", circshift(major_key, 2),
-    "F#:min", circshift(minor_key, 6),
-    "A:maj", circshift(major_key, 9),
-    "C#:min", circshift(minor_key, 1),
-    "E:maj", circshift(major_key, 4),
-    "G#:min", circshift(minor_key, 8),
-    "B:maj", circshift(major_key, 11),
-    "D#:min", circshift(minor_key, 3)
-  )
+I was also quite pleased with my k-means clustering algorithm's performance, it managed to divide the Big Music Mountain into three main genres quite well!
 
-outoftime <-
-  get_tidy_audio_analysis("2Ocfrk1syda141tYv7v9lr?si=a462ec9f23cb4cce") |>
-  compmus_align(sections, segments) |>
-  select(sections) |>
-  unnest(sections) |>
-  mutate(
-    pitches =
-      map(segments,
-        compmus_summarise, pitches,
-        method = "mean", norm = "manhattan"
-      )
-  )
+Overall I very much enjoyed this project, and have learned a lot along the way. It was interesting to see that music, which feels very human and subjective, can be very well represented in visualisations and data! Not only did I learn a lot from analysing track- and corpus level features, I also gained some R programming skills, and will probably use the flexdashboard / Rmarkdown format more in further research and personal projects.
 
-outoftime |> 
-  compmus_match_pitch_template(
-    chord_templates,         # Change to chord_templates if descired
-    method = "euclidean",  # Try different distance metrics
-    norm = "manhattan"     # Try different norms
-  ) |>
-  ggplot(
-    aes(x = start + duration / 2, width = duration, y = name, fill = d)
-  ) +
-  geom_tile() +
-  scale_fill_viridis_c(guide = "none") +
-  theme_minimal() +
-  labs(x = "Time (s)", y = "")
+.
 
-
-```
+I also want to thank my TA's, and mostly Ashley Burgoyne for the informative and interactive lectures which were very enjoyable, and I truly learned a lot about a subject that is close to my heart.
 
 ------------------------------------------------------------------------
-
-This is a chordogram of Out of Time Man, by Manu Negra
-
-------------------------------------------------------------------------
-
-```{r}
-last_3_danceable_songs <- bigmusicmountain %>% 
-  top_n(-3, wt = danceability)
-
-top_3_danceable_songs <- bigmusicmountain %>% 
-  top_n(3, wt = danceability)
-```
-
-### Tempograms of the most and least danceable songs in the Big Music Mountain
 
 ```{=html}
-<div style="display: flex; flex-direction: column;">
-  <center><img src="images/tempogram1.png" alt="Voodoo Child (Slight Return) - Jimi Hendrix" style="width: 50%; height: 50%"></center>
-  <center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2AxCeJ6PSsBYiTckM0HLY7?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
-  <center><img src="images/tempogram2.png" alt="The Message - Grandmaster Flash & The Furious Five" style="width: 50%; height: 50%"></center>
-  <center><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/5isA9icHWl2651hvfr1EOV?utm_source=generator" width="30%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></center>
-  
-</div>
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5WLcRUbX0ODQih9Fg2X5zG?utm_source=generator" width="100%" height=100%" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 ```
-
-------------------------------------------------------------------------
-
-An idea that came to me was if I could see which song is the least danceable v.s. the song that is most danceable, and compare the two tempograms of them. Because beat/tempo consistency is a part of the danceability feature, I would expect the most danceable song to have a high beat consistency (visible in a tempogram as a horizontal line), whereas the least danceable song is expected to have a lot of tempo variation.
-
-I have decided to take the top 3 most and least danceable songs and to take the most interesting one out of each one.
-
-Let's look at the two songs!
-
--   **Least danceable song:** Voodoo Child (Slight Return) - Jimi Hendrix
-
--   **Most danceable song:** The Message - Grandmaster Flash & The Furious Five
-
-At a glance you can immediately see that the tempograms are very different from each other; the tempogram of **The Message** is very consistent around 100 BPM, whereas **Voodoo Child**'s tempogram is all over the place, with no clear line through it.
-
-This is actually quite logical if we look at the definition of the danceability feature: "*Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.*" The tempo in **The Message** is very stable and regular and has a tempo of 101 BPM, which is very close to [the most danceable tempo, which is 100 bpm.](https://socialdance.stanford.edu/Syllabi/DJtips.htm)
-
-When we look at the least danceable track **Voodoo Child**, we see that it doesn't have a stable tempo, which is most likely due to it being a very old track (little to no pre-processing) in which the drummer probably follows Jimi Hendrix his guitar playing which can be all over the place sometimes. The track sounds more like a jam, in which it's hard to stick to a certain tempo. I do believe the generated tempogram doesn't accurately capture the tempo for this song, in reality the song is centered around 88 BPM and deviates a little from this throughout the track.
-
-I would say that danceability is an important factor when it comes to my personal taste in music. I tend to gravitate towards music that has a strong beat and rhythm (higher danceability), which is reflected in the median danceability being 0.65.
-
-.
-
-.
-
-.
-
-### Old Playlist v.s. New Playlist
-
-------------------------------------------------------------------------
-
-Here we see a timbre vector comparison between my new big playlist bigmusicmountain, and my old playlist, called surf. As can be seen in the image, my taste in music hasn't changed a lot when comparing timbre features. A lot of songs moved from the old playlist to the new one too, so that might be an explanation for that.
-
-------------------------------------------------------------------------
