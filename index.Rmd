@@ -52,7 +52,7 @@ In this project I will review my own taste in music through the Spotify API and 
 
 The playlist can be explored on the bottom of this page!
 
-```{r}
+```{r, include=FALSE}
 Sys.setenv(SPOTIFY_CLIENT_ID = 'e0b7bfdbe23340798ed4a387e11d1c33')
 Sys.setenv(SPOTIFY_CLIENT_SECRET = '5aebd15afa39467fbf6e14ec48ce8fb7')
 
